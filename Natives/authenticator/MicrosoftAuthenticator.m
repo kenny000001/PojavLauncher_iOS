@@ -185,7 +185,7 @@ typedef void(^XSTSCallback)(NSString *xsts, NSString *uhs);
             [uuid substringWithRange:NSMakeRange(16, 4)],
             [uuid substringWithRange:NSMakeRange(20, 12)]
         ];
-        self.authData[@"profilePicURL"] = [NSString stringWithFormat:@"https://mc-heads.net/head/%@/120", self.authData[@"profileId"]];
+        self.authData[@"profilePicURL"] = [NSString stringWithFormat:@"https://api.rms.net.cn/head/%@", self.authData[@"username"]];
         self.authData[@"oldusername"] = self.authData[@"username"];
         self.authData[@"username"] = response[@"name"];
         callback(nil, [self saveChanges]);
@@ -217,7 +217,9 @@ typedef void(^XSTSCallback)(NSString *xsts, NSString *uhs);
 - (void)refreshTokenWithCallback:(Callback)callback {
     // Move tokens to keychain if we haven't
     if (!self.tokenData) {
-        [self saveChanges];
+        showDialog(localize(@"Error", nil), @"Failed to load account tokens from keychain");
+        callback(nil, YES);
+        return;
     }
 
     if ([NSDate.date timeIntervalSince1970] > [self.authData[@"expiresAt"] longValue]) {
